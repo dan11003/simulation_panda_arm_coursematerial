@@ -1,0 +1,34 @@
+joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+
+
+position1_joint_controller:
+    type: effort_controllers/JointPositionController
+    joints: panda_joint1
+    pid: { p: 12000, d: 50, i: 0.0}
+position2_joint_controller:
+    type: effort_controllers/JointPositionController
+    joints: panda_joint2
+    pid: { p: 30000, d: 100, i: 0.02}
+position3_joint_controller:
+    type: effort_controllers/JointPositionController
+    joints: panda_joint3
+    pid: { p: 18000, d: 50, i: 0.01}
+position4_joint_controller:
+    type: effort_controllers/JointPositionController
+    joints: panda_joint4
+    pid: { p: 18000, d: 70, i: 0.01}
+position5_joint_controller:
+    type: effort_controllers/JointPositionController
+    joints: panda_joint5
+    pid: { p: 12000, d: 70, i: 0.01}
+position6_joint_controller:
+    type: effort_controllers/JointPositionController
+    joints: panda_joint6
+    pid: { p: 7000, d: 50, i: 0.01}
+position7_joint_controller:
+    type: effort_controllers/JointPositionController
+    joints: panda_joint7
+    pid: { p: 2000, d: 20, i: 0.0}

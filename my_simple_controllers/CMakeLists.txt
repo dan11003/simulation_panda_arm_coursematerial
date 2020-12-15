@@ -12,7 +12,16 @@ find_package(catkin REQUIRED COMPONENTS
   kdl_parser
   roscpp
   visualization_msgs
+  sensor_msgs
+  image_transport
+  cv_bridge
+  kdl_parser
+  tf_conversions
+  eigen_conversions
 )
+find_package(OpenCV REQUIRED)
+
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -106,7 +115,9 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES my_simple_controllers
-  CATKIN_DEPENDS controller_interface kdl_parser roscpp visualization_msgs
+  CATKIN_DEPENDS controller_interface kdl_parser roscpp visualization_msgs sensor_msgs image_transport cv_bridge kdl_parser tf_conversions eigen_conversions
+  DEPENDS opencv
+
 #  DEPENDS system_lib
 )
 
@@ -134,7 +145,7 @@ add_library(${PROJECT_NAME}
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/my_simple_controllers_node.cpp)
+ add_executable(control_node src/my_simple_controllers_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -147,9 +158,10 @@ add_library(${PROJECT_NAME}
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+ target_link_libraries(control_node
+   ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+ )
 
 #############
 ## Install ##

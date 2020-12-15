@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
   <xacro:macro name="panda_arm" params="arm_id:='panda' description_pkg:='franka_description' connected_to:='' xyz:='0 0 0' rpy:='0 0 0'">
     <xacro:unless value="${not connected_to}">
-      <joint name="${arm_id}_joint_${connected_to}" type="fixed">
+      <joint name="joint_${connected_to}" type="fixed">
         <parent link="${connected_to}"/>
         <child link="${arm_id}_link0"/>
         <origin rpy="${rpy}" xyz="${xyz}"/>
@@ -54,7 +54,7 @@
       </inertial>
       <!-- end for simulation -->
     </link>
-    <joint name="${arm_id}_joint1" type="revolute">
+    <joint name="joint1" type="revolute">
       <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
       <origin rpy="0 0 0" xyz="0 0 0.333"/>
       <parent link="${arm_id}_link0"/>
@@ -86,7 +86,7 @@
       </inertial>
       <!-- end for simulation -->
     </link>
-    <joint name="${arm_id}_joint2" type="revolute">
+    <joint name="joint2" type="revolute">
       <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-1.7628" soft_upper_limit="1.7628"/>
       <origin rpy="${-pi/2} 0 0" xyz="0 0 0"/>
       <parent link="${arm_id}_link1"/>
@@ -118,7 +118,7 @@
       </inertial>
       <!-- end for simulation -->
     </link>
-    <joint name="${arm_id}_joint3" type="revolute">
+    <joint name="joint3" type="revolute">
       <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
       <origin rpy="${pi/2} 0 0" xyz="0 -0.316 0"/>
       <parent link="${arm_id}_link2"/>
@@ -150,7 +150,7 @@
       </inertial>
       <!-- end for simulation -->
     </link>
-    <joint name="${arm_id}_joint4" type="revolute">
+    <joint name="joint4" type="revolute">
       <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-3.0718" soft_upper_limit="-0.0698"/>
       <origin rpy="${pi/2} 0 0" xyz="0.0825 0 0"/>
       <parent link="${arm_id}_link3"/>
@@ -182,7 +182,7 @@
       </inertial>
       <!-- end for simulation -->
     </link>
-    <joint name="${arm_id}_joint5" type="revolute">
+    <joint name="joint5" type="revolute">
       <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
       <origin rpy="${-pi/2} 0 0" xyz="-0.0825 0.384 0"/>
       <parent link="${arm_id}_link4"/>
@@ -214,7 +214,7 @@
       </inertial>
       <!-- end for simulation -->
     </link>
-    <joint name="${arm_id}_joint6" type="revolute">
+    <joint name="joint6" type="revolute">
       <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-0.0175" soft_upper_limit="3.7525"/>
       <origin rpy="${pi/2} 0 0" xyz="0 0 0"/>
       <parent link="${arm_id}_link5"/>
@@ -246,13 +246,13 @@
       </inertial>
       <!-- end for simulation -->
     </link>
-    <joint name="${arm_id}_joint7" type="revolute">
+    <joint name="joint7" type="revolute">
       <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
       <origin rpy="${pi/2} 0 0" xyz="0.088 0 0"/>
       <parent link="${arm_id}_link6"/>
       <child link="${arm_id}_link7"/>
       <axis xyz="0 0 1"/>
-      <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
+      <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100s"/>
 
       <!-- for simulation -->
       <dynamics damping="${joint_damping}" friction="0.5649"/>
@@ -267,11 +267,48 @@
       </inertial>
       <!-- end for simulation -->
     </link>
-    <joint name="${arm_id}_joint8" type="fixed">
+    <joint name="joint8" type="fixed">
       <origin rpy="0 0 0" xyz="0 0 0.107"/>
       <parent link="${arm_id}_link7"/>
       <child link="${arm_id}_link8"/>
       <axis xyz="0 0 0"/>
     </joint>
+
+
+
+<joint name="camera_joint" type="fixed">
+   <axis xyz="0 1 0" />
+   <origin xyz="0 0 0.05" rpy="${3.1415} ${-3.1415/2} 0"/>
+   <parent link="${arm_id}_link8"/>
+   <child link="camera_link"/>
+ </joint>
+<xacro:property name="camera_side" value="0.05" />
+ <!-- Camera -->
+ <link name="camera_link">
+   <collision>
+     <origin xyz="0 0 0" rpy="0 0 0"/>
+     <geometry>
+   <box size="${camera_side} ${camera_side} ${camera_side}"/>
+     </geometry>
+   </collision>
+
+   <visual>
+     <origin xyz="0 0 0" rpy="0 0 0"/>
+     <geometry>
+   <box size="${camera_side} ${camera_side} ${camera_side}"/>
+     </geometry>
+     <material name="red"/>
+   </visual>
+
+   <inertial>
+     <mass value="1e-5" />
+     <origin xyz="0 0 0" rpy="0 0 0"/>
+     <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+   </inertial>
+ </link>
+
+
+
   </xacro:macro>
+
 </robot>
