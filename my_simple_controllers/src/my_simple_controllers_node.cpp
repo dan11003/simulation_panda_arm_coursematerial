@@ -196,7 +196,7 @@ public:
                    100, 30, 0, 0// change the last two parameters
                    // (min_radius & max_radius) to detect larger circles
                    );
-      if(circles.size()==1){
+      if(circles.size()==1){ // only control if there is one circle in sight.
         Vec3i c;
         Point center;
         double radius;
@@ -224,13 +224,14 @@ public:
         cout<<"because z_normal "<<z_normal*max_pixel<<"rotate ey: "<<ey<<endl;
         cout<<"because y_normal "<<y_normal*max_pixel<<"rotate ez: "<<ez<<endl;
 
-        PixelRadToPose(radius, ey,ez, Tobj_error);
+        PixelRadToPose(radius, ey,ez, Tobj_error); // Get bearing as affine3d, relative pose, but position is zero.
 
-        tf::Transform Tf; // publish
+        tf::Transform Tf; // publish relative pose
         tf::transformEigenToTF(Tobj_error, Tf);
         std::vector<tf::StampedTransform> trans_vek;
         trans_vek.push_back(tf::StampedTransform(Tf, msg->header.stamp, "/camera_link", "/taraget_pose")) ;
         Tb.sendTransform(trans_vek);
+
         if(enable_tracking){
 
           static tf::TransformListener listener;
@@ -245,32 +246,29 @@ public:
             return;
           }
           Eigen::Affine3d Tcurrent, Tgoal;
-          tf::poseTFToEigen(transform, Tcurrent);
-          //cout<<"tf: pose"<<Tcurrent.translation().transpose()<<endl;
+          tf::poseTFToEigen(transform, Tcurrent); // lookup transformation by the time hte image was taken.
 
 
 
-          Tgoal = Tcurrent*Tobj_error;
+
+          Tgoal = Tcurrent*Tobj_error; // use the relative error to set a goal pose in the world frame.
           Eigen::Vector3d euler = Tgoal.linear().eulerAngles(0,1,2);
           static double first_orientation_x = Tcurrent.linear().eulerAngles(0,1,2)(0) ;
-          static Eigen::Vector3d first = Tcurrent.translation();
-          Eigen::Affine3d noroll = create_rotation_matrix(3.14,euler(1),euler(2));
+          static Eigen::Vector3d first = Tcurrent.translation(); // remember position vector of first assumed pose
+          Eigen::Affine3d noroll = create_rotation_matrix(3.14,euler(1),euler(2)); //fix roll to 3.14, something related to this is very fishy, appear to be a singularity or something
           noroll.translation() = first;
           cout<<"orient: "<<noroll.linear().eulerAngles(0,1,2).transpose()<<endl;
 
           Eigen::Matrix<double,7,1> q;
-          if(Ik(noroll, q)==KDL::ChainIkSolverPos_NR::E_NOERROR)
+          if(Ik(noroll, q)==KDL::ChainIkSolverPos_NR::E_NOERROR) // if Ik was succesfull,
           {
             m_tar.lock();
 
             for(int i=0;i<7;i++){
-              qtarget(i) = q(i);
+              qtarget(i) = q(i); // command joint position
             }
 
             m_tar.unlock();
-          }
-          else{
-
           }
         }
 
